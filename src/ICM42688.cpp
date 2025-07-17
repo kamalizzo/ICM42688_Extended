@@ -3,6 +3,8 @@
 
 using namespace ICM42688reg;
 
+#define LTC4332_USED
+
 /* ICM42688 object, input the I2C bus and address */
 ICM42688::ICM42688(TwoWire& bus, uint8_t address) {
 	_i2c     = &bus;     // I2C bus
@@ -656,6 +658,11 @@ int ICM42688::readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
 		}
 		digitalWrite(_csPin, LOW);                       // select the ICM42688 chip
 		_spi->transfer(subAddress | 0x80);               // specify the starting register address
+
+#ifdef LTC4332_USED
+		_spi->transfer(0x00);    
+#endif
+
 		for (uint8_t i = 0; i < count; i++) {
 			dest[i] = _spi->transfer(0x00);                // read the data
 		}
